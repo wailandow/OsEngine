@@ -288,3 +288,14 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/**
 # !tools/packages.config
+/project/OsEngine/Robots/OnScriptIndicators/Rexample.cs
+/project/OsEngine/Robots/OnScriptIndicators/cVWAP_old.cs
+/project/OsEngine/Robots/OnScriptIndicators/cVWAPpat.cs
+/project/OsEngine/Robots/OnScriptIndicators/cVWAP.cs.bkp
+/project/OsEngine/Robots/OnScriptIndicators/cVWAP.cs
+/project/OsEngine/Robots/OnScriptIndicators/cExternalj.cs
+/project/OsEngine/Robots/OnScriptIndicators/cExternal.cs
+/project/OsEngine/Robots/Mashki.cs
+/project/OsEngine/Robots/OsEngineTrend
+/project/OsEngine/bin
+/project/OsEngine/OsEngine.csproj
