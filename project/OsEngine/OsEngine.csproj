@@ -61,6 +61,9 @@
     <ApplicationIcon>Images\OsLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="alglib.net, Version=3.16.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\alglib.net.3.16.0\lib\net45\alglib.net.dll</HintPath>
+    </Reference>
     <Reference Include="cgate_net64, Version=5.2.1.21764, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\cgate_net64.dll</HintPath>
@@ -78,10 +81,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\LmaxClientLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.14.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>Robots\OsEngineTrend\SX\NUnit-2.4.3-net-2.0\bin\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="OkonkwoOandaV20, Version=1.0.7247.23935, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -117,6 +126,9 @@
     <Reference Include="RestSharp">
       <HintPath>..\..\..\OsEngineTepm\12BitStamp\Rokolab.BitstampClient-master (хороший HHTP клиент. Больше ничего )\Rokolab.BitstampClient\bin\Debug\RestSharp.dll</HintPath>
     </Reference>
+    <Reference Include="RserveCLI2, Version=1.0.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RserveCLI2.1.0.22.0\lib\net45\RserveCLI2.dll</HintPath>
+    </Reference>
     <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\SkiaSharp.1.68.3\lib\net45\SkiaSharp.dll</HintPath>
     </Reference>
@@ -137,11 +149,15 @@
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard1.1\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
       <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -825,15 +841,51 @@
     <Compile Include="Robots\OnScriptIndicators\BollingerTrailing.cs" />
     <Compile Include="Robots\OnScriptIndicators\CciTrade.cs" />
     <Compile Include="Robots\OnScriptIndicators\FundBalanceDivergenceBot.cs" />
+    <Compile Include="Robots\OsEngineTrend\Ivashov_arbit.cs" />
     <Compile Include="Robots\OnScriptIndicators\MacdRevers.cs" />
     <Compile Include="Robots\OnScriptIndicators\MacdTrail.cs" />
     <Compile Include="Robots\OnScriptIndicators\OneLegArbitrage.cs" />
     <Compile Include="Robots\OnScriptIndicators\PairRsiTrade.cs" />
     <Compile Include="Robots\OnScriptIndicators\PriceChannelBreak.cs" />
     <Compile Include="Robots\OnScriptIndicators\PriceChannelVolatility.cs" />
+    <Compile Include="Robots\OnScriptIndicators\Rexample.cs" />
     <Compile Include="Robots\OnScriptIndicators\RsiTrade.cs" />
     <Compile Include="Robots\OnScriptIndicators\RviTrade.cs" />
     <Compile Include="Robots\OnScriptIndicators\TimeOfDayBot.cs" />
+    <Compile Include="Robots\OsEngineTrend\Alcon.cs" />
+    <Compile Include="Robots\OsEngineTrend\AlconCT.cs" />
+    <Compile Include="Robots\OsEngineTrend\AlligatorTrendBot.cs" />
+    <Compile Include="Robots\OsEngineTrend\AlligatorVap.cs" />
+    <Compile Include="Robots\OsEngineTrend\ArbitrageMy.cs" />
+    <Compile Include="Robots\OsEngineTrend\Binomial.cs" />
+    <Compile Include="Robots\OsEngineTrend\BollingerTrendBot.cs" />
+    <Compile Include="Robots\OsEngineTrend\BollingerTrendBotNorm.cs" />
+    <Compile Include="Robots\OsEngineTrend\Bulamashki.cs" />
+    <Compile Include="Robots\OsEngineTrend\CandlePattern.cs" />
+    <Compile Include="Robots\OsEngineTrend\ClastProcessing.cs" />
+    <Compile Include="Robots\OsEngineTrend\ClastProcessingv1.cs" />
+    <Compile Include="Robots\OsEngineTrend\ClusterCountertrendM.cs" />
+    <Compile Include="Robots\OsEngineTrend\ClusterM.cs" />
+    <Compile Include="Robots\OsEngineTrend\ClusterM2.cs" />
+    <Compile Include="Robots\OsEngineTrend\ClustVWAP.cs" />
+    <Compile Include="Robots\OsEngineTrend\EnvTr.cs" />
+    <Compile Include="Robots\OsEngineTrend\HLVWAP.cs" />
+    <Compile Include="Robots\OsEngineTrend\Ivashov.cs" />
+    <Compile Include="Robots\OsEngineTrend\Mashki.cs" />
+    <Compile Include="Robots\OsEngineTrend\MashkiInt.cs" />
+    <Compile Include="Robots\OsEngineTrend\MLDLoader.cs" />
+    <Compile Include="Robots\OsEngineTrend\Movbot.cs" />
+    <Compile Include="Robots\OsEngineTrend\MyFunctions.cs" />
+    <Compile Include="Robots\OsEngineTrend\MyTrend.cs" />
+    <Compile Include="Robots\OsEngineTrend\Orbit.cs" />
+    <Compile Include="Robots\OsEngineTrend\PriceChannelBot.cs" />
+    <Compile Include="Robots\OsEngineTrend\RangeBot.cs" />
+    <Compile Include="Robots\OsEngineTrend\SX\DataFormat.cs" />
+    <Compile Include="Robots\OsEngineTrend\SX\Globals.cs" />
+    <Compile Include="Robots\OsEngineTrend\SX\Sax.cs" />
+    <Compile Include="Robots\OsEngineTrend\SX\SaxDataRep.cs" />
+    <Compile Include="Robots\OsEngineTrend\SX\SaxOptions.cs" />
+    <Compile Include="Robots\OsEngineTrend\SX\Util.cs" />
     <Compile Include="Robots\Trend\EnvelopTrend.cs" />
     <Compile Include="Robots\Trend\MomentumMacd.cs" />
     <Compile Include="Robots\MarketMaker\PairTraderSpreadSma.cs" />
