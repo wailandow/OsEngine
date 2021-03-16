@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
@@ -1138,7 +1139,8 @@ namespace OsEngine.OsTrader.Panels.Tab
                 _connector.ServerType == ServerType.Lmax ||
                 _connector.ServerType == ServerType.BitMax ||
                 _connector.ServerType == ServerType.FTX ||
-                _connector.ServerType == ServerType.BinanceFutures)
+                _connector.ServerType == ServerType.BinanceFutures ||
+                _connector.ServerType == ServerType.Transaq)
             {
                 return true;
             }
@@ -3777,6 +3779,17 @@ namespace OsEngine.OsTrader.Panels.Tab
                 LastTimeCandleUpdate = DateTime.Now;
 
                 AlertControlPosition();
+
+                while (_chartMaster == null)
+                {
+                    Task delay = new Task(() =>
+                    {
+                        Thread.Sleep(100);
+                    });
+
+                    delay.Start();
+                    delay.Wait();
+                }
 
                 _chartMaster.SetCandles(candles);
                 if (CandleUpdateEvent != null)
