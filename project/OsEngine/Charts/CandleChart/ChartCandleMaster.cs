@@ -42,18 +42,18 @@ namespace OsEngine.Charts.CandleChart
             _name = nameBoss + "ChartMaster";
             _startProgram = startProgram;
 
-            if (PrimeSettingsMaster.UseOxyPlotChart == false)
-                ChartCandle = new WinFormsChartPainter(nameBoss, startProgram);
-
-            else if (PrimeSettingsMaster.UseOxyPlotChart == true)
-                ChartCandle = new OxyChartPainter(nameBoss, startProgram);
+            ChartCandle = new WinFormsChartPainter(nameBoss, startProgram);
 
             ChartCandle.ChartClickEvent += ChartCandle_ChartClickEvent;
             ChartCandle.LogMessageEvent += NewLogMessage;
             ChartCandle.ClickToIndexEvent += _chartCandle_ClickToIndexEvent;
             ChartCandle.SizeAxisXChangeEvent += ChartCandle_SizeAxisXChangeEvent;
 
-            Load();
+            if(startProgram != StartProgram.IsOsOptimizer)
+            {
+                Load();
+            }
+           
             _canSave = true;
         }
 
@@ -296,6 +296,16 @@ namespace OsEngine.Charts.CandleChart
                         {
                             CreateIndicator(new SimpleVWAP(indicator[1], Convert.ToBoolean(indicator[3])), indicator[2]);
                         }
+
+                        if (indicator[0] == "DTD")
+                        {
+                            CreateIndicator(new DynamicTrendDetector(indicator[1], Convert.ToBoolean(indicator[3])), indicator[2]);
+                        }
+
+                        if (indicator[0] == "AtrChannel")
+                        {
+                            CreateIndicator(new AtrChannel(indicator[1], Convert.ToBoolean(indicator[3])), indicator[2]);
+                        }
                     }
 
                     reader.Close();
@@ -331,6 +341,12 @@ namespace OsEngine.Charts.CandleChart
             {
                 return;
             }
+
+            if(_startProgram == StartProgram.IsOsOptimizer)
+            {
+                return;
+            }
+
             try
             {
                 using (StreamWriter writer = new StreamWriter(@"Engine\" + Name + @".txt", false))
@@ -1165,7 +1181,6 @@ namespace OsEngine.Charts.CandleChart
 
                 bool canReload = _startProgram != StartProgram.IsOsOptimizer;
 
-
                 _lastCount = candles.Count;
                 _lastPrice = candles[candles.Count - 1].Close;
                 _myCandles = candles;
@@ -1177,7 +1192,6 @@ namespace OsEngine.Charts.CandleChart
                         _lastCandleIncome = DateTime.Now;
                         ChartCandle.ProcessCandles(candles);
                         ChartCandle.ProcessPositions(_myPosition);
-
                     }
 
                     if (_indicators != null)
@@ -1222,6 +1236,11 @@ namespace OsEngine.Charts.CandleChart
         /// <param name="trades">ticks/тики</param>
         public void SetTick(List<Trade> trades)
         {
+            if(_startProgram == StartProgram.IsOsOptimizer)
+            {
+                return;
+            }
+
             try
             {
                 ChartCandle.ProcessTrades(trades);
@@ -1265,11 +1284,9 @@ namespace OsEngine.Charts.CandleChart
         {
             try
             {
-
                 ChartCandle.StartPaintPrimeChart(gridChart, host, rectangle);
-                ChartCandle.ProcessPositions(_myPosition);
-
                 ChartCandle.ProcessCandles(_myCandles);
+                ChartCandle.ProcessPositions(_myPosition);
 
                 for (int i = 0; _indicators != null && i < _indicators.Count; i++)
                 {

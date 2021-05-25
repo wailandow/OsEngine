@@ -41,10 +41,18 @@ namespace OsEngine.Market.Connectors
             _name = name;
             StartProgram = startProgram;
 
-            TimeFrameBuilder = new TimeFrameBuilder(_name);
+            TimeFrameBuilder = new TimeFrameBuilder(_name, startProgram);
             ServerType = ServerType.None;
-            Load();
-            _canSave = true;
+           
+
+            if (StartProgram != StartProgram.IsOsOptimizer)
+            {
+                _canSave = true;
+                Load();
+                _emulator = new OrderExecutionEmulator();
+                _emulator.MyTradeEvent += ConnectorBot_NewMyTradeEvent;
+                _emulator.OrderChangeEvent += ConnectorBot_NewOrderIncomeEvent;
+            }
 
             if (!string.IsNullOrWhiteSpace(NamePaper))
             {
@@ -55,11 +63,9 @@ namespace OsEngine.Market.Connectors
                 _subscrabler.Start();
             }
 
-            if (StartProgram != StartProgram.IsOsOptimizer)
+            if(StartProgram == StartProgram.IsTester)
             {
-                _emulator = new OrderExecutionEmulator();
-                _emulator.MyTradeEvent += ConnectorBot_NewMyTradeEvent;
-                _emulator.OrderChangeEvent += ConnectorBot_NewOrderIncomeEvent;
+                PortfolioName = "GodMode";
             }
         }
 
@@ -152,8 +158,8 @@ namespace OsEngine.Market.Connectors
 
             if (_emulator != null)
             {
-                _emulator.MyTradeEvent += ConnectorBot_NewMyTradeEvent;
-                _emulator.OrderChangeEvent += ConnectorBot_NewOrderIncomeEvent;
+                _emulator.MyTradeEvent -= ConnectorBot_NewMyTradeEvent;
+                _emulator.OrderChangeEvent -= ConnectorBot_NewOrderIncomeEvent;
             }
 
             if (_myServer != null)
@@ -1089,13 +1095,18 @@ namespace OsEngine.Market.Connectors
         {
             try
             {
-                if (NamePaper == null ||
-                    tradesList == null ||
-                    tradesList.Count == 0 ||
-                    tradesList[tradesList.Count - 1] == null ||
-                    tradesList[tradesList.Count - 1].SecurityNameCode != NamePaper)
+                if (NamePaper == null || tradesList == null || tradesList.Count == 0)
                 {
                     return;
+                }
+                else
+                {
+                    int count = tradesList.Count;
+                    if (tradesList[count - 1] == null ||
+                        tradesList[count - 1].SecurityNameCode != NamePaper)
+                    {
+                        return;
+                    }
                 }
             }
             catch

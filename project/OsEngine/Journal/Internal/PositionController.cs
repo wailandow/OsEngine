@@ -93,8 +93,11 @@ namespace OsEngine.Journal.Internal
 
             CreateTable();
 
-            Load();
-
+            if(_startProgram != StartProgram.IsOsOptimizer)
+            {
+                Load();
+            }
+  
             if (_deals != null &&
                 _deals.Count > 0)
             {
@@ -329,7 +332,7 @@ namespace OsEngine.Journal.Internal
                 return;
             }
 
-            if(_startProgram != StartProgram.IsOsTrader)
+            if(_startProgram == StartProgram.IsOsOptimizer)
             {
                 return;
             }
@@ -644,17 +647,20 @@ namespace OsEngine.Journal.Internal
                 return;
             }
 
-            for (int i = positions.Count - 1; i > -1; i--)
+            if(_startProgram != StartProgram.IsOsOptimizer)
             {
-                if (positions[i].State == PositionStateType.Open)
+                for (int i = positions.Count - 1; i > -1; i--)
                 {
-                    decimal profitOld = positions[i].ProfitPortfolioPunkt;
-
-                    positions[i].SetBidAsk(bid, ask);
-
-                    if (profitOld != positions[i].ProfitPortfolioPunkt)
+                    if (positions[i].State == PositionStateType.Open)
                     {
-                        ProcesPosition(positions[i]);
+                        decimal profitOld = positions[i].ProfitOperationPunkt;
+
+                        positions[i].SetBidAsk(bid, ask);
+
+                        if (profitOld != positions[i].ProfitOperationPunkt)
+                        {
+                            ProcesPosition(positions[i]);
+                        }
                     }
                 }
             }
@@ -1159,6 +1165,7 @@ namespace OsEngine.Journal.Internal
                             return;
                         }
                     }
+                    return;
                 }
 
                 if (position.State == PositionStateType.Done ||

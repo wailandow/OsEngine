@@ -424,13 +424,13 @@ namespace OsEngine.OsTrader.Panels.Tab
         /// transaction creation wizard / 
         /// мастер создания сделок
         /// </summary>
-        private PositionCreator _dealCreator;
+        public PositionCreator _dealCreator;
 
         /// <summary>
         /// Journal positions / 
         /// журнал
         /// </summary>
-        private Journal.Journal _journal;
+        public Journal.Journal _journal;
 
         /// <summary>
         /// settings maintenance settings / 
@@ -454,10 +454,11 @@ namespace OsEngine.OsTrader.Panels.Tab
         {
             get
             {
-                if (ServerMaster.GetServers() == null)
+                if(StartProgram == StartProgram.IsOsOptimizer)
                 {
-                    return ServerConnectStatus.Disconnect;
+                    return ServerConnectStatus.Connect;
                 }
+
                 IServer myServer = _connector.MyServer;
 
                 if (myServer == null)
@@ -1140,7 +1141,9 @@ namespace OsEngine.OsTrader.Panels.Tab
                 _connector.ServerType == ServerType.BitMax ||
                 _connector.ServerType == ServerType.FTX ||
                 _connector.ServerType == ServerType.BinanceFutures ||
-                _connector.ServerType == ServerType.Transaq)
+                _connector.ServerType == ServerType.Transaq ||
+                _connector.ServerType == ServerType.Tester
+                )
             {
                 return true;
             }
@@ -2569,7 +2572,7 @@ namespace OsEngine.OsTrader.Panels.Tab
                 newOrder.LifeTime = timeLife;
                 position.AddNewOpenOrder(newOrder);
 
-                SetNewLogMessage(Securiti.Name + "модификация позиции шорт", LogMessageType.Trade);
+                SetNewLogMessage(Securiti.Name + " модификация позиции шорт", LogMessageType.Trade);
 
                 _connector.OrderExecute(newOrder);
             }
@@ -3467,7 +3470,8 @@ namespace OsEngine.OsTrader.Panels.Tab
                             Position pos = LongCreate(_stopsOpener[i].PriceOrder, _stopsOpener[i].Volume, OrderPriceType.Limit,
                                 ManualPositionSupport.SecondToOpen, true);
 
-                            if (pos != null)
+                            if (pos != null 
+                                && !string.IsNullOrEmpty(opener.SignalType))
                             {
                                 pos.SignalTypeOpen = opener.SignalType;
                             }
@@ -3489,7 +3493,8 @@ namespace OsEngine.OsTrader.Panels.Tab
                             Position pos = ShortCreate(_stopsOpener[i].PriceOrder, _stopsOpener[i].Volume, OrderPriceType.Limit,
                                 ManualPositionSupport.SecondToOpen, true);
 
-                            if (pos != null)
+                            if (pos != null
+                                && !string.IsNullOrEmpty(opener.SignalType))
                             {
                                 pos.SignalTypeOpen = opener.SignalType;
                             }
@@ -3677,7 +3682,11 @@ namespace OsEngine.OsTrader.Panels.Tab
                 }
                 else if (position.State == PositionStateType.Open)
                 {
-                    SetNewLogMessage(TabName + OsLocalization.Trader.Label73 + position.Number, LogMessageType.Trade);
+                    if (StartProgram != StartProgram.IsOsOptimizer)
+                    {
+                        SetNewLogMessage(TabName + OsLocalization.Trader.Label73 + position.Number, LogMessageType.Trade);
+                    }
+                        
                     if (PositionOpeningSuccesEvent != null)
                     {
                         PositionOpeningSuccesEvent(position);
@@ -4001,6 +4010,11 @@ namespace OsEngine.OsTrader.Panels.Tab
         private void _connector_MyTradeEvent(MyTrade trade)
         {
             _journal.SetNewMyTrade(trade);
+
+            if(MyTradeEvent != null)
+            {
+                MyTradeEvent(trade);
+            }
         }
 
         /// <summary>
@@ -4054,6 +4068,12 @@ namespace OsEngine.OsTrader.Panels.Tab
 
         // исходящие события. Обработчики для стратегии
         // outgoing events. Handlers for strategy
+
+        /// <summary>
+        /// my new trade event /
+        /// событие моей новой сделки
+        /// </summary>
+        public event Action<MyTrade> MyTradeEvent;
 
         /// <summary>
         /// The morning session started. Send the first trades

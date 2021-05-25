@@ -60,7 +60,7 @@ namespace OsEngine.Language
             "Ru:Журнал_");
 
         public string Label1 => OsLocalization.ConvertToLocString(
-            "Eng:Total profitJournal_" +
+            "Eng:Total profit_" +
             "Ru:Общая прибыль_");
 
         public string Label2 => OsLocalization.ConvertToLocString(
@@ -170,5 +170,9 @@ namespace OsEngine.Language
         public string Message1 => OsLocalization.ConvertToLocString(
             "Eng:You must select a file to save!_" +
             "Ru:Необходимо выбрать файл для сохранения!_");
+
+        public string Message2 => OsLocalization.ConvertToLocString(
+            "Eng:You must select a file to load!_" +
+            "Ru:Необходимо выбрать файл для загрузки!_");
     }
 }

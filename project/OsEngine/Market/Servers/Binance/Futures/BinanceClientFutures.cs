@@ -256,7 +256,9 @@ namespace OsEngine.Market.Servers.Binance.Futures
                 {
                     // var res = CreateQuery( Method.GET, "/fapi/v1/balance", null, true);
 
-                    var res = CreateQuery(Method.GET, "/" + type_str_selector + "/v1/account", null, true);
+                     var res = CreateQuery(Method.GET, "/" + type_str_selector + "/v2/account", null, true);
+
+                    // var res = CreateQuery(Method.GET, "/fapi/v1/balance", null, true);
 
                     if (res == null)
                     {
@@ -550,7 +552,7 @@ namespace OsEngine.Market.Servers.Binance.Futures
                 trade.Volume = Math.Abs(StringToDecimal(jtTrade.Q));
                 trade.SecurityNameCode = secName;
 
-                if (StringToDecimal(jtTrade.Q) >= 0)
+                if (!jtTrade.m)
                 {
                     trade.Side = Side.Buy;
                     trade.Ask = 0;
@@ -558,7 +560,7 @@ namespace OsEngine.Market.Servers.Binance.Futures
                     trade.Bid = trade.Price;
                     trade.BidsVolume = trade.Volume;
                 }
-                else if (StringToDecimal(jtTrade.Q) < 0)
+                else
                 {
                     trade.Side = Side.Sell;
                     trade.Ask = trade.Price;
@@ -803,15 +805,14 @@ namespace OsEngine.Market.Servers.Binance.Futures
 
                     var response = new RestClient(baseUrl).Execute(request).Content;
 
-                    if (response.Contains("code") && !response.Contains("code\": 200"))
+                    if (response.StartsWith("<!DOCTYPE"))
+                    {
+                        throw new Exception(response);
+                    }
+                    else if (response.Contains("code") && !response.Contains("code\": 200"))
                     {
                         var error = JsonConvert.DeserializeAnonymousType(response, new ErrorMessage());
                         throw new Exception(error.msg);
-                    }
-
-                    if (response == null)
-                    {
-
                     }
 
                     return response;
@@ -872,11 +873,6 @@ namespace OsEngine.Market.Servers.Binance.Futures
         /// <param name="order"></param>
         public void ExecuteOrder(Order order)
         {
-            ExecuteOrderOnMarginExchange(order);
-        }
-
-        private void ExecuteOrderOnMarginExchange(Order order)
-        {
             lock (_lockOrder)
             {
                 try
@@ -903,10 +899,16 @@ namespace OsEngine.Market.Servers.Binance.Futures
                     }
                     param.Add("&type=", order.TypeOrder == OrderPriceType.Limit ? "LIMIT" : "MARKET");
                     //param.Add("&timeInForce=", "GTC");
-                    param.Add("&newClientOrderId=", order.NumberUser.ToString());
+                    param.Add("&newClientOrderId=", "x-gnrPHWyE" + order.NumberUser.ToString());
                     param.Add("&quantity=",
                         order.Volume.ToString(CultureInfo.InvariantCulture)
                             .Replace(CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator, "."));
+
+                    if (!HedgeMode && order.PositionConditionType == OrderPositionConditionType.Close)
+                    {
+                        param.Add("&reduceOnly=", "true");
+                    }
+
                     if (order.TypeOrder == OrderPriceType.Limit)
                     {
                         param.Add("&timeInForce=", "GTC");
@@ -1310,15 +1312,15 @@ namespace OsEngine.Market.Servers.Binance.Futures
 
                                 var order = ord.o;
 
-                                string orderNumUser = order.c;
+                                Int32 orderNumUser;
 
                                 try
                                 {
-                                    Convert.ToInt32(orderNumUser);
+                                    orderNumUser = Convert.ToInt32(order.c.ToString().Replace("x-gnrPHWyE", ""));
                                 }
                                 catch (Exception)
                                 {
-                                    continue;
+                                    orderNumUser = Convert.ToInt32(order.c.GetHashCode());
                                 }
 
                                 if (order.x == "NEW")
@@ -1326,7 +1328,7 @@ namespace OsEngine.Market.Servers.Binance.Futures
                                     Order newOrder = new Order();
                                     newOrder.SecurityNameCode = order.s;
                                     newOrder.TimeCallBack = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(ord.T));
-                                    newOrder.NumberUser = Convert.ToInt32(orderNumUser);
+                                    newOrder.NumberUser = orderNumUser;
 
                                     newOrder.NumberMarket = order.i.ToString();
                                     //newOrder.PortfolioNumber = order.PortfolioNumber; добавить в сервере
@@ -1348,7 +1350,7 @@ namespace OsEngine.Market.Servers.Binance.Futures
                                     newOrder.SecurityNameCode = order.s;
                                     newOrder.TimeCallBack = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(ord.T));
                                     newOrder.TimeCancel = newOrder.TimeCallBack;
-                                    newOrder.NumberUser = Convert.ToInt32(orderNumUser);
+                                    newOrder.NumberUser = orderNumUser;
                                     newOrder.NumberMarket = order.i.ToString();
                                     newOrder.Side = order.S == "BUY" ? Side.Buy : Side.Sell;
                                     newOrder.State = OrderStateType.Cancel;
@@ -1367,7 +1369,7 @@ namespace OsEngine.Market.Servers.Binance.Futures
                                     Order newOrder = new Order();
                                     newOrder.SecurityNameCode = order.s;
                                     newOrder.TimeCallBack = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(ord.T));
-                                    newOrder.NumberUser = Convert.ToInt32(orderNumUser);
+                                    newOrder.NumberUser = orderNumUser;
                                     newOrder.NumberMarket = order.i.ToString();
                                     newOrder.Side = order.S == "BUY" ? Side.Buy : Side.Sell;
                                     newOrder.State = OrderStateType.Fail;
@@ -1404,7 +1406,7 @@ namespace OsEngine.Market.Servers.Binance.Futures
                                     newOrder.SecurityNameCode = order.s;
                                     newOrder.TimeCallBack = new DateTime(1970, 1, 1).AddMilliseconds(Convert.ToDouble(ord.T));
                                     newOrder.TimeCancel = newOrder.TimeCallBack;
-                                    newOrder.NumberUser = Convert.ToInt32(orderNumUser);
+                                    newOrder.NumberUser = orderNumUser;
                                     newOrder.NumberMarket = order.i.ToString();
                                     newOrder.Side = order.S == "BUY" ? Side.Buy : Side.Sell;
                                     newOrder.State = OrderStateType.Cancel;
@@ -1526,7 +1528,21 @@ namespace OsEngine.Market.Servers.Binance.Futures
             }
         }
 
-        public bool HedgeMode;
+        public bool HedgeMode
+        {
+            get { return _hedgeMode; }
+            set 
+            { 
+                if(value == _hedgeMode)
+                {
+                    return;
+                }
+                _hedgeMode = value;
+                SetPositionMode();
+            }
+        }
+        private bool _hedgeMode;
+
         public void SetPositionMode()
         {
             try
