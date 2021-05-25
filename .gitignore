@@ -299,3 +299,4 @@ __pycache__/
 /project/OsEngine/Robots/OsEngineTrend
 /project/OsEngine/bin
 /project/OsEngine/OsEngine.csproj
+/project/OsEngine/Robots/OnScriptIndicators/ZMQexample.cs
