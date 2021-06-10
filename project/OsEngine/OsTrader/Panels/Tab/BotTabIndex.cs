@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Windows;
@@ -337,6 +338,19 @@ namespace OsEngine.OsTrader.Panels.Tab
                             // ignore
                         }
                     }
+                    if (_startProgram == StartProgram.IsOsTrader && Tabs.Count > 0)
+                    {
+                        var candlesToKeep = ((OsEngine.Market.Servers.AServer)Tabs[0].MyServer)._neadToSaveCandlesCountParam.Value;
+                        var needToRemove = ((OsEngine.Market.Servers.AServer)Tabs[0].MyServer)._needToRemoveCandlesFromMemory.Value;
+
+                        if (needToRemove
+                            && Candles[Candles.Count - 1].TimeStart.Minute % 15 == 0
+                            && Candles[Candles.Count - 1].TimeStart.Second == 0
+                            && Candles.Count > candlesToKeep)
+                        {
+                            Candles.RemoveRange(0, Candles.Count - 1 - candlesToKeep);
+                        }
+                    }
 
                     _chartMaster.SetCandles(Candles);
 
@@ -440,7 +454,8 @@ namespace OsEngine.OsTrader.Panels.Tab
                 if (formula[i] != '/' && formula[i] !=  '*' && formula[i] !=  '+' && formula[i] !=  '-'
                     && formula[i] != '(' && formula[i] != ')' && formula[i] != 'A' && formula[i] != '1' && formula[i] != '0'
                     && formula[i] !=  '2' && formula[i] !=  '3' && formula[i] !=  '4' && formula[i] !=  '5'
-                    && formula[i] !=  '6' && formula[i] !=  '7' && formula[i] !=  '8' && formula[i] !=  '9')
+                    && formula[i] !=  '6' && formula[i] !=  '7' && formula[i] !=  '8' && formula[i] !=  '9'
+                    && formula[i] != '.')
                 { // incomprehensible characters / непонятные символы
                     SendNewLogMessage(OsLocalization.Trader.Label76,LogMessageType.Error);
                     return "";
@@ -706,8 +721,8 @@ namespace OsEngine.OsTrader.Panels.Tab
             {
                 // both digit values
                 // оба значения цифры
-                decimal one = Convert.ToDecimal(valOne);
-                decimal two = Convert.ToDecimal(valTwo);
+                decimal one = Convert.ToDecimal(valOne, new CultureInfo("en-US"));
+                decimal two = Convert.ToDecimal(valTwo, new CultureInfo("en-US"));
 
                 return ConcateDecimals(one, two, sign);
             }
@@ -977,7 +992,7 @@ namespace OsEngine.OsTrader.Panels.Tab
                 candlesOne = value.ValueCandles;
             }
 
-            decimal valueTwo = Convert.ToDecimal(valTwo);
+            decimal valueTwo = Convert.ToDecimal(valTwo, new CultureInfo("en-US"));
 
             string znak = "";
 
@@ -1074,7 +1089,7 @@ namespace OsEngine.OsTrader.Panels.Tab
             // take the first value
             // берём первое значение
 
-            decimal valueOne = Convert.ToDecimal(valOne);
+            decimal valueOne = Convert.ToDecimal(valOne, new CultureInfo("en-US"));
 
             // take the second value
             // берём второе значение

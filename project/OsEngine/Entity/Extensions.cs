@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace OsEngine.Entity
 {
@@ -12,12 +13,17 @@ namespace OsEngine.Entity
             {
                 return null;
             }
+            
+            // это для того чтобы из названия бумаги удалять кавычки (правка @cibermax).
+            // К примеру ПАО ЛУКОЙЛ, АДР tiker LKOD@GS не получалось создать папку выдавало исключение
+            char x = '"';
 
             value = value
                 .Replace("/", "")
                 .Replace("*", "")
                 .Replace(":", "")
-                .Replace(";", "");
+                .Replace(";", "")
+                .Replace(x.ToString(), "");// это для того чтобы из названия бумаги удалять кавычки (правка @cibermax).;
 
             return value;
 
@@ -211,6 +217,23 @@ namespace OsEngine.Entity
             oldCandles.AddRange(newCandles);
 
             return oldCandles;
+        }
+
+        public static string ToFormatString(this DataGridViewRow row)
+        {
+            string result = "";
+
+            for(int i = 0; row.Cells != null && i < row.Cells.Count;i++)
+            {
+                if(row.Cells[i].Value == null)
+                {
+                    result +=  ",";
+                    continue;
+                }
+                result += row.Cells[i].Value.ToString().Replace("\n"," ").Replace("\r"," ").Replace(",",".") + ",";
+            }
+
+            return result;
         }
 
     }

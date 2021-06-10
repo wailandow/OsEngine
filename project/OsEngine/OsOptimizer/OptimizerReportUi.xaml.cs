@@ -104,7 +104,7 @@ namespace OsEngine.OsOptimizer
         /// </summary>
         private void CreateTableFazes()
         {
-            _gridFazesEnd = DataGridFactory.GetDataGridView(DataGridViewSelectionMode.FullRowSelect, DataGridViewAutoSizeRowsMode.None);
+            _gridFazesEnd = DataGridFactory.GetDataGridView(DataGridViewSelectionMode.FullRowSelect, DataGridViewAutoSizeRowsMode.None,true);
             _gridFazesEnd.ScrollBars = ScrollBars.Vertical;
             DataGridViewTextBoxCell cell0 = new DataGridViewTextBoxCell();
             cell0.Style = _gridFazesEnd.DefaultCellStyle;
@@ -236,7 +236,7 @@ namespace OsEngine.OsOptimizer
         /// </summary>
         private void CreateTableResults()
         {
-            _gridResults = DataGridFactory.GetDataGridView(DataGridViewSelectionMode.ColumnHeaderSelect, DataGridViewAutoSizeRowsMode.None);
+            _gridResults = DataGridFactory.GetDataGridView(DataGridViewSelectionMode.ColumnHeaderSelect, DataGridViewAutoSizeRowsMode.None,true);
             _gridResults.ScrollBars = ScrollBars.Vertical;
 
             DataGridViewTextBoxCell cell0 = new DataGridViewTextBoxCell();
@@ -753,6 +753,26 @@ namespace OsEngine.OsOptimizer
             try
             {
                 SaveFileDialog myDialog = new SaveFileDialog();
+
+                string saveFileName = _master.StrategyName;
+                
+                if(_master.TabsSimpleNamesAndTimeFrames != null && _master.TabsSimpleNamesAndTimeFrames.Count != 0)
+                {
+                    saveFileName += "_" + _master.TabsSimpleNamesAndTimeFrames[0].NameSecurity;
+                    saveFileName += "_" + _master.TabsSimpleNamesAndTimeFrames[0].TimeFrame;
+                }
+
+                IIStrategyParameter regime = _master._optimizerExecutor._parameters.Find(p => p.Name == "Regime");
+
+                if(regime != null)
+                {
+
+                    saveFileName += "_" + ((StrategyParameterString)regime).ValueString;
+                }
+                saveFileName = saveFileName.Replace(".txt", "");
+
+                myDialog.FileName = saveFileName;
+
                 myDialog.Filter = "*.txt|";
                 myDialog.ShowDialog();
 

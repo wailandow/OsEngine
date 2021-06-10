@@ -78,6 +78,8 @@ namespace OsEngine.Market
 
                     if (serv == null)
                     {
+                        servers.RemoveAt(i);
+                        i--;
                         continue;
                     }
 
@@ -146,6 +148,11 @@ namespace OsEngine.Market
             _gridSources.Rows.Clear();
 
             List<IServer> servers = ServerMaster.GetServers();
+
+            if (servers != null)
+            {
+                servers = servers.FindAll(s => s != null && s.ServerType != ServerType.Optimizer);
+            }
 
             List<ServerType> serverTypes = ServerMaster.ServersTypes;
 
