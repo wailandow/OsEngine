@@ -892,6 +892,7 @@
     <Compile Include="Robots\OnScriptIndicators\CciTrade.cs" />
     <Compile Include="Robots\OnScriptIndicators\FundBalanceDivergenceBot.cs" />
     <Compile Include="Robots\OsEngineTrend\BbPowerTradeMod.cs" />
+    <Compile Include="Robots\OsEngineTrend\EnvelopMult.cs" />
     <Compile Include="Robots\OsEngineTrend\EnvelopTrendMod.cs" />
     <Compile Include="Robots\OsEngineTrend\Ivashov_arbit.cs" />
     <Compile Include="Robots\OnScriptIndicators\MacdRevers.cs" />
